@@ -14,6 +14,15 @@ int8_t wait_flashflag_status(uint8_t flag,uint8_t status)
     return 0;
 }
 
+uint16_t Get_Sum(uint8_t *Buffer, uint16_t Length)
+{
+  uint16_t sum = 0;
+  for (uint16_t i = 0; i < Length; i++)
+  {
+    sum += Buffer[i];
+  }
+  return sum;
+}
 
 void Flash_ReadBuf(uint32_t Address, uint8_t *Buffer, uint16_t Length) {
   assert_param(IS_FLASH_ADDRESS_OK(Address));
@@ -67,6 +76,7 @@ bool Flash_WriteDataBlock(uint16_t nStartBlock, uint8_t *Buffer, uint16_t Length
   {
     return FALSE;
   }
+  bool rc = TRUE;
   flashWritting = 1;
   FLASH_SetProgrammingTime(FLASH_PROGRAMTIME_STANDARD);
   FLASH_Unlock(FLASH_MEMTYPE_DATA);
@@ -82,14 +92,21 @@ bool Flash_WriteDataBlock(uint16_t nStartBlock, uint8_t *Buffer, uint16_t Length
     {
       maxLen = Length - (nBlockNum -1)*FLASH_BLOCK_SIZE;
     }
-    for( uint16_t i = 0; i < maxLen; i++ ) {
+    memcpy(WriteBuf,Buffer + (block - nStartBlock) * FLASH_BLOCK_SIZE,maxLen);
+    /*for( uint16_t i = 0; i < maxLen; i++ ) {
       WriteBuf[i] = Buffer[(block - nStartBlock) * FLASH_BLOCK_SIZE + i];
-    }
+    }*/
     FLASH_ProgramBlock(block, FLASH_MEMTYPE_DATA, FLASH_PROGRAMMODE_STANDARD, WriteBuf);
     FLASH_WaitForLastOperation(FLASH_MEMTYPE_DATA);
-  }
-  
+    
+    uint16_t sum = Get_Sum(WriteBuf,maxLen);
+    Flash_ReadBuf(FLASH_DATA_START_PHYSICAL_ADDRESS+block*FLASH_BLOCK_SIZE, WriteBuf, maxLen);
+    if(sum != Get_Sum(WriteBuf,maxLen))
+    {
+      rc = FALSE;
+    }
+  } 
   FLASH_Lock(FLASH_MEMTYPE_DATA);
   flashWritting = 0;
-  return TRUE;
+  return rc;
 }

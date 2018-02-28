@@ -13,5 +13,4 @@ void Flash_ReadBuf(uint32_t Address, uint8_t *Buffer, uint16_t Length);
 bool Flash_WriteBuf(uint32_t Address, uint8_t *Buffer, uint16_t Length);
 bool Flash_WriteDataBlock(uint16_t nStartBlock, uint8_t *Buffer, uint16_t Length);
 
-
 #endif
