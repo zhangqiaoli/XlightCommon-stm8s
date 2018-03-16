@@ -29,6 +29,16 @@ void Uart2SendByte(uint8_t data)
   while (UART2_GetFlagStatus(UART2_FLAG_TXE) == RESET);
 }
 
+void Uart2SendByteByLen( uint8_t* TxBuffer, uint8_t Length )
+{
+  	while( Length-- )
+	{
+		while( RESET == UART2_GetFlagStatus( UART2_FLAG_TXE ));
+		UART2_SendData8( * TxBuffer );
+		TxBuffer++;
+	}
+}
+
 uint8_t Uart2SendString(uint8_t *pBuf)
 {
   unsigned char ucPos;
@@ -37,7 +47,9 @@ uint8_t Uart2SendString(uint8_t *pBuf)
   
   ucPos = 0;
   do {
+#ifndef DEBUG_NO_WWDG
     feed_wwdg();
+#endif
     if (pBuf[ucPos] != '\0') {
       Uart2SendByte(pBuf[ucPos ++]);
     } else 
