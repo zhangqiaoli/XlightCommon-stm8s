@@ -1,4 +1,5 @@
 #include "Uart2Dev.h"
+#include "debugDefine.h"
 
 void uart2_config(uint32_t speed)
 {
