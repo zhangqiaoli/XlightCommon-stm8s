@@ -1,5 +1,6 @@
 #include "rf24l01.h"
 #include "MyMessage.h"
+#include "Uart2Dev.h"
 #include <stm8s_spi.h>
 #include <stm8s_gpio.h>
 uint8_t rx_addr[ADDRESS_WIDTH];
@@ -11,7 +12,7 @@ int8_t wait_flag_status(uint8_t flag,uint8_t status)
     while( SPI_GetFlagStatus(flag)== status && timeout--);
     if(!timeout) 
     {
-      Uart2SendString("timeout");
+      printlog("timeout");
       return 1;
     }
     return 0;
