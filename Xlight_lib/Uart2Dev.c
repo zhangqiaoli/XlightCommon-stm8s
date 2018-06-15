@@ -1,6 +1,6 @@
 #include "Uart2Dev.h"
 #include "debugDefine.h"
-
+#include "wwdg.h"
 void uart2_config(uint32_t speed)
 {
   CLK_PeripheralClockConfig(CLK_PERIPHERAL_UART2, ENABLE);
